@@ -2,6 +2,9 @@ group 'ist.meic.pa'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "Test"
 
 sourceCompatibility = 1.8
 

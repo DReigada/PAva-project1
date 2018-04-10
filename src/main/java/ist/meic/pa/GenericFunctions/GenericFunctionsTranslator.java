@@ -50,21 +50,18 @@ public class GenericFunctionsTranslator implements Translator {
   }
 
   private void addNewMethod(ClassPool pool, CtClass clazz, int numArgs) throws NotFoundException, CannotCompileException {
-    CtClass[] argsArr = new CtClass[numArgs];
+    CtClass[] argsArray = new CtClass[numArgs];
     CtClass objectClass = pool.get("java.lang.Object");
-    Arrays.fill(argsArr, objectClass);
+    Arrays.fill(argsArray, objectClass);
 
     String body = "" +
         "{" +
-        "    ist.meic.pa.GenericFunctions.util.MethodMapWithClass[] arr = new ist.meic.pa.GenericFunctions.util.MethodMapWithClass[]{" +
-        "        new ist.meic.pa.GenericFunctions.util.MethodMapWithClass(param1, $1.getClass())," + // TODO change this to be generic
-        "        new ist.meic.pa.GenericFunctions.util.MethodMapWithClass(param2, $2.getClass())" +
-        "    };" +
+        "    ist.meic.pa.GenericFunctions.util.MethodMapWithClass[] arr = helper.validMethods($args);" +
         "    Object result = ist.meic.pa.GenericFunctions.Helpers.invokeMethod(ist.meic.pa.GenericFunctions.Helpers.getBestMethod(arr), $args);" +
         "    return ($r)result;" +
         "}";
 
-    CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", new CtClass[]{objectClass, objectClass}, new CtClass[]{}, body, clazz);
+    CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", argsArray, new CtClass[]{}, body, clazz);
 
     clazz.addMethod(newGenMethod);
   }

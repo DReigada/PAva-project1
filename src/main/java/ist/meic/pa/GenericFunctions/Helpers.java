@@ -52,7 +52,10 @@ public class Helpers {
     Stream.Builder<Class<?>> streamBuilder = Stream.builder();
 
     do {
-      streamBuilder.add(clazz);
+      streamBuilder.accept(clazz);
+      for (Class<?> interfaze : clazz.getInterfaces()) {
+        streamBuilder.accept(interfaze);
+      }
       clazz = clazz.getSuperclass();
     } while (clazz != null);
 
