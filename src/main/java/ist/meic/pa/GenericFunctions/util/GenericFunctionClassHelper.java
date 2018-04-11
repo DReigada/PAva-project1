@@ -28,7 +28,7 @@ public class GenericFunctionClassHelper {
   }
 
   private Stream<Method> filteredMethods() {
-    return Arrays.stream(clazz.getMethods())
+    return Arrays.stream(clazz.getDeclaredMethods())
         .filter(m -> m.getName().equals(methodName));
   }
 

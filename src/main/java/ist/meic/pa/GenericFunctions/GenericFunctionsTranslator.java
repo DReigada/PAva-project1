@@ -22,6 +22,8 @@ public class GenericFunctionsTranslator implements Translator {
 
         int numArgs = methods[0].getParameterTypes().length;
 
+        addHelperField(clazz, renamedMethod(methods[0].getName()));
+
         addNewMethod(pool, clazz, numArgs);
 
         changeGenericFunctionMethods(clazz, methods);
@@ -32,18 +34,26 @@ public class GenericFunctionsTranslator implements Translator {
     }
   }
 
+  private void addHelperField(CtClass clazz, String methodName) throws CannotCompileException {
+    String helperName = "ist.meic.pa.GenericFunctions.util.GenericFunctionClassHelper";
+
+    CtField helperField = CtField.make(
+        "public static final " + helperName + " helper$ = " +
+            "new " + helperName + "(" + clazz.getName() + ".class, \"" + methodName + "\");", clazz);
+
+    clazz.addField(helperField);
+  }
+
   private void changeGenericFunctionMethods(CtClass clazz, CtMethod[] methods) throws CannotCompileException {
     for (CtMethod method : methods) {
       CtMethod newMethod = new CtMethod(method, clazz, null);
       newMethod.setBody("" +
           "{" +
-          "    System.out.print(\"HEEERE: \");" +
-          "    System.out.println(java.util.Arrays.toString($args));" +
           "    return ($r) newMethod$($$);" +
           "}"
       );
 
-      method.setName(method.getName() + "$");
+      method.setName(renamedMethod(method.getName()));
 
       clazz.addMethod(newMethod);
     }
@@ -56,7 +66,7 @@ public class GenericFunctionsTranslator implements Translator {
 
     String body = "" +
         "{" +
-        "    ist.meic.pa.GenericFunctions.util.MethodMapWithClass[] arr = helper.validMethods($args);" +
+        "    ist.meic.pa.GenericFunctions.util.MethodMapWithClass[] arr = helper$.validMethods($args);" +
         "    Object result = ist.meic.pa.GenericFunctions.Helpers.invokeMethod(ist.meic.pa.GenericFunctions.Helpers.getBestMethod(arr), $args);" +
         "    return ($r)result;" +
         "}";
@@ -64,5 +74,9 @@ public class GenericFunctionsTranslator implements Translator {
     CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", argsArray, new CtClass[]{}, body, clazz);
 
     clazz.addMethod(newGenMethod);
+  }
+
+  private String renamedMethod(String oldName) {
+    return oldName + "$";
   }
 }
