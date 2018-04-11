@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-public class Helpers {
+public class ReflectionHelpers {
 
   public static Method getBestMethod(MethodMapWithClass... arr) {
     return Arrays.stream(arr)
