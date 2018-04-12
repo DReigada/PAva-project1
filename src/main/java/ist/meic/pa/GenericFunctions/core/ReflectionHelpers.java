@@ -1,9 +1,7 @@
-package ist.meic.pa.GenericFunctions;
+package ist.meic.pa.GenericFunctions.core;
 
 import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
-import ist.meic.pa.GenericFunctions.util.DefaultMethodComparator;
-import ist.meic.pa.GenericFunctions.util.GenericFunctionClassHelper;
 import ist.meic.pa.GenericFunctions.util.MethodMap;
 import ist.meic.pa.GenericFunctions.util.MethodMapWithClass;
 

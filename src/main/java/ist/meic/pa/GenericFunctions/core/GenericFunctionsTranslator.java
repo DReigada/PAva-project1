@@ -1,5 +1,6 @@
-package ist.meic.pa.GenericFunctions;
+package ist.meic.pa.GenericFunctions.core;
 
+import ist.meic.pa.GenericFunctions.GenericFunction;
 import javassist.*;
 
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class GenericFunctionsTranslator implements Translator {
   }
 
   private void addHelperField(CtClass clazz, String methodName) throws CannotCompileException {
-    String helperName = "ist.meic.pa.GenericFunctions.util.GenericFunctionClassHelper";
+    String helperName = "ist.meic.pa.GenericFunctions.core.GenericFunctionClassHelper";
 
     CtField helperField = CtField.make(
         "public static final " + helperName + " helper$ = " +

@@ -1,5 +1,6 @@
 package ist.meic.pa.GenericFunctions;
 
+import ist.meic.pa.GenericFunctions.core.GenericFunctionsTranslator;
 import javassist.ClassPool;
 import javassist.Loader;
 import javassist.Translator;

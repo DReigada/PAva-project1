@@ -1,7 +1,8 @@
-package ist.meic.pa.GenericFunctions.util;
+package ist.meic.pa.GenericFunctions.core;
 
 import com.google.common.collect.Streams;
-import ist.meic.pa.GenericFunctions.ReflectionHelpers;
+import ist.meic.pa.GenericFunctions.core.ReflectionHelpers;
+import ist.meic.pa.GenericFunctions.util.Pair;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

@@ -1,7 +1,9 @@
-package ist.meic.pa.GenericFunctions.util;
+package ist.meic.pa.GenericFunctions.core;
 
 
-import ist.meic.pa.GenericFunctions.ReflectionHelpers;
+import ist.meic.pa.GenericFunctions.core.ReflectionHelpers;
+import ist.meic.pa.GenericFunctions.util.MethodMap;
+import ist.meic.pa.GenericFunctions.util.MethodMapWithClass;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
