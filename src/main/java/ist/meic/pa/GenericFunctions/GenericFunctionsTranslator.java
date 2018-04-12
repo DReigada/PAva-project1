@@ -64,12 +64,9 @@ public class GenericFunctionsTranslator implements Translator {
     CtClass objectClass = pool.get("java.lang.Object");
     Arrays.fill(argsArray, objectClass);
 
-    String helpersName = "ist.meic.pa.GenericFunctions.ReflectionHelpers";
-
     String body = "" +
         "{" +
-        "    ist.meic.pa.GenericFunctions.util.MethodMapWithClass[] arr = helper$.validMethods($args);" +
-        "    Object result = " + helpersName + ".invokeMethod(" + helpersName + ".getBestMethod(arr), $args);" +
+        "    Object result = helper$.runFunction($args);" +
         "    return ($r)result;" +
         "}";
 

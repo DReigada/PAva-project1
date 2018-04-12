@@ -3,6 +3,7 @@ package ist.meic.pa.GenericFunctions;
 import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
 import ist.meic.pa.GenericFunctions.util.DefaultMethodComparator;
+import ist.meic.pa.GenericFunctions.util.GenericFunctionClassHelper;
 import ist.meic.pa.GenericFunctions.util.MethodMap;
 import ist.meic.pa.GenericFunctions.util.MethodMapWithClass;
 
@@ -17,7 +18,16 @@ import java.util.stream.Stream;
 
 public class ReflectionHelpers {
 
-  public static Method getBestMethod(MethodMapWithClass... arr) {
+  public static Object runFunction(GenericFunctionClassHelper helper, Object[] arguments) {
+    Class<?>[] paramsClasses = Arrays.stream(arguments).map(Object::getClass).toArray(Class[]::new);
+
+    Method bestMethod = getBestMethod(helper.validMethods(arguments), paramsClasses);
+    return invokeMethod(bestMethod, arguments);
+  }
+
+  private static Method getBestMethod(MethodMapWithClass[] arr, Class<?>[] arguments) {
+    DefaultMethodComparator comparator = new DefaultMethodComparator(arguments);
+
     return Arrays.stream(arr)
         .map(mapWithClass -> getMethodsFor(mapWithClass.map, mapWithClass.clazz))
         .reduce((acc, set) -> {
@@ -27,13 +37,13 @@ public class ReflectionHelpers {
         .filter(set -> set.size() > 0)
         .map(set -> {
           ArrayList<Method> list = new ArrayList<>(set);
-          list.sort(DefaultMethodComparator.instance);
+          list.sort(comparator); // TODO: sort is not necessary since only the first value is needed
           return list.get(0);
         })
         .orElseThrow(NoApplicableGenericFunctionException::new);
   }
 
-  public static <A> A invokeMethod(Method method, Object... args) {
+  private static <A> A invokeMethod(Method method, Object[] args) {
     method.setAccessible(true);
     try {
       return (A) method.invoke(null, (Object[]) args);
@@ -48,7 +58,7 @@ public class ReflectionHelpers {
         .collect(Collectors.toCollection(LinkedHashSet::new));
   }
 
-  private static Stream<Class<?>> getSuperClassesOf(Class<?> clazz) {
+  public static Stream<Class<?>> getSuperClassesOf(Class<?> clazz) {
     Stream.Builder<Class<?>> streamBuilder = Stream.builder();
 
     do {

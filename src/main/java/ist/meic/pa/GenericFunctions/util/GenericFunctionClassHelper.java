@@ -1,6 +1,8 @@
 package ist.meic.pa.GenericFunctions.util;
 
 
+import ist.meic.pa.GenericFunctions.ReflectionHelpers;
+
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -17,6 +19,10 @@ public class GenericFunctionClassHelper {
 
     int argsNumber = filteredMethods().findFirst().get().getParameterCount();
     argumentsMethodMaps = initializeMethodMaps(argsNumber);
+  }
+
+  public Object runFunction(Object[] arguments) {
+    return ReflectionHelpers.runFunction(this, arguments);
   }
 
   public MethodMapWithClass[] validMethods(Object[] params) {
