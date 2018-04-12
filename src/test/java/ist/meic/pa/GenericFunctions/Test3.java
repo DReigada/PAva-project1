@@ -4,42 +4,40 @@ import static org.junit.Assert.assertEquals;
 
 @GenericFunction
 interface Explain {
-  static String it(Integer i) {
-    return i + " is an integer";
+  static StringBuilder stringBuilder = new StringBuilder();
+
+  static void it(Integer i) {
+    stringBuilder.append(i + " is an integer");
   }
 
-  static String it(Double i) {
-    return i + " is a double";
+  static void it(Double i) {
+    stringBuilder.append(i + " is a double");
   }
 
-  static String it(String s) {
-    return s + " is a string";
+  static void it(String s) {
+    stringBuilder.append(s + " is a string");
   }
 
   @BeforeMethod
-  static String it(Number n) {
-    return "The number ";
+  static void it(Number n) {
+    stringBuilder.append("The number ");
   }
 
   @AfterMethod
-  static String it(Object o) {
-    return ".";
+  static void it(Object o) {
+    stringBuilder.append(".\n");
   }
 }
 
 public class Test3 {
 
-  public static void main(String[] args) {
-    StringBuilder sb = new StringBuilder();
-
+  public static void main(String[] args) throws Exception {
     Object[] objs = new Object[]{"Hello", 1, 2.0};
     for (Object o : objs) {
-      sb
-          .append(Explain.it(o))
-          .append("\n");
+      Explain.it(o);
     }
 
-    String result = sb.toString();
+    String result = Explain.stringBuilder.toString();
 
     String expected = "" +
         "Hello is a string.\n" +
