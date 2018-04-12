@@ -18,6 +18,11 @@ public class TestsWrapper {
   }
 
   @Test
+  public void test3() throws Throwable {
+    runTestClass(Test3.class);
+  }
+
+  @Test
   public void shouldWorkWithInterfaceOfSuperClass() throws Throwable {
     runTestClass(ShouldWorkWithInterfaceOfSuperClass.class);
   }
@@ -26,4 +31,5 @@ public class TestsWrapper {
   public void shouldSelectClosestInterface() throws Throwable {
     runTestClass(ShouldSelectClosestInterface.class);
   }
+
 }
