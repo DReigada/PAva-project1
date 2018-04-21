@@ -1,12 +1,13 @@
 package ist.meic.pa.GenericFunctions.util.method.order;
 
-import com.google.common.collect.Streams;
 import ist.meic.pa.GenericFunctions.core.ReflectionHelpers;
 import ist.meic.pa.GenericFunctions.util.Pair;
+import ist.meic.pa.GenericFunctions.util.Streams;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Comparator;
+import java.util.function.BiFunction;
+import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
 public class DefaultMethodComparator extends AbstractMethodComparator {
@@ -20,15 +21,11 @@ public class DefaultMethodComparator extends AbstractMethodComparator {
     if (m1.equals(m2)) {
       return 0;
     } else {
-      Stream<Class<?>> m1Types = Arrays.stream(m1.getParameterTypes());
-      Stream<Class<?>> m2Types = Arrays.stream(m2.getParameterTypes());
+      Pair<Class<?>, Class<?>>[] zipped =
+          Streams.zip(m1.getParameterTypes(), m2.getParameterTypes(), (BiFunction<Class<?>, Class<?>, Pair>) Pair::new)
+              .toArray((IntFunction<Pair<Class<?>, Class<?>>[]>) Pair[]::new);
 
-      Stream<Pair<Class<?>, Class<?>>> zipped = Streams
-          .zip(m1Types, m2Types, (a, b) -> new Pair(a, b));
-
-      Stream<Class<?>> argsStream = Arrays.stream(referenceArguments);
-
-      return Streams.zip(zipped, argsStream, (pair, arg) -> new ClassComparator(arg).compare(pair.fst, pair.snd))
+      return Streams.zip(zipped, referenceArguments, (pair, arg) -> new ClassComparator(arg).compare(pair.fst, pair.snd))
           .filter(i -> i != 0)
           .findFirst()
           .orElse(0);
