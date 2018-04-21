@@ -2,6 +2,9 @@ package ist.meic.pa.GenericFunctions.util;
 
 import java.util.Arrays;
 
+/**
+ * This class is necessary to be able to create a HashMap with keys of type Class<?>[]
+ */
 public class ParametersClassWrapper {
   public final Class<?>[] paramsClasses;
 

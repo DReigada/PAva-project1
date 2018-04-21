@@ -43,7 +43,7 @@ public class DefaultMethodComparator extends AbstractMethodComparator {
       this.referenceClass = referenceClass;
     }
 
-    /*
+    /**
      * c1 is bigger than c2 if it is a superClass/interface of c2,
      * unless c1 or c2 are interfaces in that case the reference class is used to compare
      * Note: Can not compare unrelated types
