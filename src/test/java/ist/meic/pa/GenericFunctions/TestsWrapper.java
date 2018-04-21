@@ -23,6 +23,11 @@ public class TestsWrapper {
   }
 
   @Test
+  public void testP() throws Throwable {
+    runTestClass(TestP.class);
+  }
+
+  @Test
   public void shouldWorkWithInterfaceOfSuperClass() throws Throwable {
     runTestClass(ShouldWorkWithInterfaceOfSuperClass.class);
   }
