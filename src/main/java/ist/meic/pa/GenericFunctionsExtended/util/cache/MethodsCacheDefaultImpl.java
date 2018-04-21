@@ -1,7 +1,7 @@
 package ist.meic.pa.GenericFunctionsExtended.util.cache;
 
 import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
-import ist.meic.pa.GenericFunctions.util.MethodsWrapper;
+import ist.meic.pa.GenericFunctions.util.method.MethodsWrapper;
 import ist.meic.pa.GenericFunctions.util.ParametersClassWrapper;
 
 import java.util.HashMap;

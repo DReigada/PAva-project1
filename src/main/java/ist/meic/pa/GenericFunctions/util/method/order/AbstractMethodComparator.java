@@ -1,9 +1,9 @@
-package ist.meic.pa.GenericFunctions.core;
+package ist.meic.pa.GenericFunctions.util.method.order;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
 
-abstract class AbstractMethodComparator implements Comparator<Method> {
+public abstract class AbstractMethodComparator implements Comparator<Method> {
   protected Class<?>[] referenceArguments;
 
   public AbstractMethodComparator(Class<?>[] referenceArguments) {

@@ -1,4 +1,4 @@
-package ist.meic.pa.GenericFunctions.util;
+package ist.meic.pa.GenericFunctions.util.method;
 
 import java.lang.reflect.Method;
 import java.util.List;

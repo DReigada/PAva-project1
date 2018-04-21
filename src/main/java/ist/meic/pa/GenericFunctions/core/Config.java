@@ -1,6 +1,7 @@
 package ist.meic.pa.GenericFunctions.core;
 
 import ist.meic.pa.GenericFunctions.GenericFunction;
+import ist.meic.pa.GenericFunctions.util.method.order.DefaultMethodComparator;
 import ist.meic.pa.GenericFunctionsExtended.GenericFunctionExtended;
 
 class Config {

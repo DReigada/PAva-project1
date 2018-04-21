@@ -1,4 +1,4 @@
-package ist.meic.pa.GenericFunctions.util;
+package ist.meic.pa.GenericFunctions.util.method;
 
 public class MethodMapWithClass {
   public final MethodMap map;

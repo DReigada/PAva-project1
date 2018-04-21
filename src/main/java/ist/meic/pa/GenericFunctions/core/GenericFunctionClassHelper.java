@@ -5,11 +5,12 @@ import ist.meic.pa.GenericFunctions.AfterMethod;
 import ist.meic.pa.GenericFunctions.BeforeMethod;
 import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
-import ist.meic.pa.GenericFunctions.util.MethodMap;
-import ist.meic.pa.GenericFunctions.util.MethodMapWithClass;
-import ist.meic.pa.GenericFunctions.util.MethodsWrapper;
+import ist.meic.pa.GenericFunctions.util.method.MethodMap;
+import ist.meic.pa.GenericFunctions.util.method.MethodMapWithClass;
+import ist.meic.pa.GenericFunctions.util.method.MethodsWrapper;
 import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
 import ist.meic.pa.GenericFunctions.util.cache.MethodsCacheNoOp;
+import ist.meic.pa.GenericFunctions.util.method.order.AbstractMethodComparator;
 import ist.meic.pa.GenericFunctionsExtended.util.cache.MethodsCacheDefaultImpl;
 
 import java.lang.reflect.Method;

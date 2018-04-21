@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 
-class ReflectionHelpers {
+public class ReflectionHelpers {
   static <A> A invokeMethod(Method method, Object[] args) {
     method.setAccessible(true);
     try {
@@ -17,7 +17,7 @@ class ReflectionHelpers {
     }
   }
 
-  static Stream<Class<?>> getSuperClassesOf(Class<?> clazz) {
+  public static Stream<Class<?>> getSuperClassesOf(Class<?> clazz) {
     Stream.Builder<Class<?>> streamBuilder = Stream.builder();
 
     do {

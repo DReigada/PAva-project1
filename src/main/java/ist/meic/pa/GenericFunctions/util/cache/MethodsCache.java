@@ -1,6 +1,6 @@
 package ist.meic.pa.GenericFunctions.util.cache;
 
-import ist.meic.pa.GenericFunctions.util.MethodsWrapper;
+import ist.meic.pa.GenericFunctions.util.method.MethodsWrapper;
 
 import java.util.Optional;
 import java.util.function.Supplier;
