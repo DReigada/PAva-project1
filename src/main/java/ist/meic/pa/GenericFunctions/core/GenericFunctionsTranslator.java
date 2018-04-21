@@ -1,6 +1,7 @@
 package ist.meic.pa.GenericFunctions.core;
 
 import ist.meic.pa.GenericFunctions.GenericFunction;
+import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import ist.meic.pa.GenericFunctionsExtended.GenericFunctionExtended;
 import javassist.*;
 
@@ -33,7 +34,7 @@ public class GenericFunctionsTranslator implements Translator {
       }
 
     } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
+      throw new GenericFunctionException("This should never happen", e);
     }
   }
 

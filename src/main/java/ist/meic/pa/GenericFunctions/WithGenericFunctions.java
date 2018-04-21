@@ -1,6 +1,7 @@
 package ist.meic.pa.GenericFunctions;
 
 import ist.meic.pa.GenericFunctions.core.GenericFunctionsTranslator;
+import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import javassist.ClassPool;
 import javassist.Loader;
 import javassist.Translator;
@@ -10,7 +11,7 @@ import java.util.Arrays;
 public class WithGenericFunctions {
   public static void main(String[] args) throws Throwable {
     if (args.length < 1) {
-      throw new RuntimeException("Missing class name argument");
+      throw new GenericFunctionException("Missing class name argument");
     }
 
     Translator t = new GenericFunctionsTranslator();
