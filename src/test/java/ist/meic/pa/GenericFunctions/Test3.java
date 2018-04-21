@@ -3,8 +3,8 @@ package ist.meic.pa.GenericFunctions;
 import static org.junit.Assert.assertEquals;
 
 @GenericFunction
-interface Explain {
-  static StringBuilder stringBuilder = new StringBuilder();
+abstract class Explain {
+  static StringBuilder stringBuilder;
 
   static void it(Integer i) {
     stringBuilder.append(i + " is an integer");
@@ -33,6 +33,8 @@ public class Test3 {
 
   public static void main(String[] args) throws Exception {
     Object[] objs = new Object[]{"Hello", 1, 2.0};
+    Explain.stringBuilder = new StringBuilder();
+
     for (Object o : objs) {
       Explain.it(o);
     }

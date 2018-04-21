@@ -1,12 +1,14 @@
-package ist.meic.pa.GenericFunctions;
+package ist.meic.pa.tests;
 
-import ist.meic.pa.GenericFunctions.domain.ExplainMe;
+import ist.meic.pa.tests.domain.ExplainMe;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestP {
   public static void main(String[] args) {
     Object o1 = 2, o2 = 91;
+    ExplainMe.sb = new StringBuilder();
+
     ExplainMe.twoThings(o1, o2);
 
     String result = ExplainMe.sb.toString();

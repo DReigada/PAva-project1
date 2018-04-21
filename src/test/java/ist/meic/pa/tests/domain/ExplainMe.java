@@ -1,4 +1,4 @@
-package ist.meic.pa.GenericFunctions.domain;
+package ist.meic.pa.tests.domain;
 
 import ist.meic.pa.GenericFunctions.AfterMethod;
 import ist.meic.pa.GenericFunctions.BeforeMethod;
@@ -7,7 +7,7 @@ import ist.meic.pa.GenericFunctions.GenericFunction;
 @GenericFunction
 public class ExplainMe {
 
-  public static StringBuilder sb = new StringBuilder();
+  public static StringBuilder sb;
 
   @AfterMethod
   public static void twoThings(Number o1, Number o2) {
