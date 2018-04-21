@@ -5,11 +5,11 @@ import ist.meic.pa.GenericFunctions.AfterMethod;
 import ist.meic.pa.GenericFunctions.BeforeMethod;
 import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
+import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
+import ist.meic.pa.GenericFunctions.util.cache.MethodsCacheNoOp;
 import ist.meic.pa.GenericFunctions.util.method.MethodMap;
 import ist.meic.pa.GenericFunctions.util.method.MethodMapWithClass;
 import ist.meic.pa.GenericFunctions.util.method.MethodsWrapper;
-import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
-import ist.meic.pa.GenericFunctions.util.cache.MethodsCacheNoOp;
 import ist.meic.pa.GenericFunctions.util.method.order.AbstractMethodComparator;
 import ist.meic.pa.GenericFunctionsExtended.util.cache.MethodsCacheDefaultImpl;
 
@@ -48,8 +48,11 @@ public class GenericFunctionClassHelper {
     methodsCache = withCache ? new MethodsCacheDefaultImpl() : new MethodsCacheNoOp();
   }
 
-  private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments, String methodComparator) {
-    AbstractMethodComparator comparator = getMethodComparator(methodComparator, arguments);
+  private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments, String methodComparator, boolean reverse) {
+    Comparator<Method> comparator =
+        reverse ?
+            getMethodComparator(methodComparator, arguments).reversed() :
+            getMethodComparator(methodComparator, arguments);
 
     return Arrays.stream(arr)
         .map(mapWithClass -> getMethodsFor(mapWithClass.map, mapWithClass.clazz))
@@ -120,15 +123,15 @@ public class GenericFunctionClassHelper {
   }
 
   private List<Method> getAfterMethodsFor(Class<?>[] arguments) {
-    return orderMethods(applicableMethods(argumentsToAfterFunctionMaps, arguments), arguments, methodComparator);
+    return orderMethods(applicableMethods(argumentsToAfterFunctionMaps, arguments), arguments, methodComparator, true);
   }
 
   private List<Method> getBeforeMethodsFor(Class<?>[] arguments) {
-    return orderMethods(applicableMethods(argumentsToBeforeFunctionMaps, arguments), arguments, methodComparator);
+    return orderMethods(applicableMethods(argumentsToBeforeFunctionMaps, arguments), arguments, methodComparator, false);
   }
 
   private Method getPrimaryMethodFor(Class<?>[] arguments) {
-    List<Method> methods = orderMethods(applicableMethods(argumentsToPrimaryFunctionMaps, arguments), arguments, methodComparator);
+    List<Method> methods = orderMethods(applicableMethods(argumentsToPrimaryFunctionMaps, arguments), arguments, methodComparator, false);
 
     if (methods.size() > 0) {
       return methods.get(0);
