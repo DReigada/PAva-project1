@@ -21,38 +21,29 @@ import java.util.stream.Stream;
 
 public class GenericFunctionClassHelper {
 
-  private final Class<?> clazz;
-  private final String methodName;
-  private final MethodMap[] argumentsToPrimaryFunctionMaps;
-  private final MethodMap[] argumentsToBeforeFunctionMaps;
-  private final MethodMap[] argumentsToAfterFunctionMaps;
+  private final Map<Integer, MethodMap[]> argumentsToPrimaryFunctionMaps;
+  private final Map<Integer, MethodMap[]> argumentsToBeforeFunctionMaps;
+  private final Map<Integer, MethodMap[]> argumentsToAfterFunctionMaps;
 
   private final String methodComparator;
   private final MethodsCache methodsCache;
 
   public GenericFunctionClassHelper(Class<?> clazz, String methodName, boolean withCache, String methodComparator) {
-    this.clazz = clazz;
-    this.methodName = methodName;
+    argumentsToBeforeFunctionMaps = new HashMap<>();
+    argumentsToAfterFunctionMaps = new HashMap<>();
+    argumentsToPrimaryFunctionMaps = new HashMap<>();
 
-    int argsNumber = filteredMethods(clazz, methodName).findFirst().get().getParameterCount();
-
-    Predicate<Method> beforePredicate = method -> method.isAnnotationPresent(BeforeMethod.class);
-    Predicate<Method> afterPredicate = method -> method.isAnnotationPresent(AfterMethod.class);
-    Predicate<Method> primaryPredicate = beforePredicate.or(afterPredicate).negate();
-
-    argumentsToBeforeFunctionMaps = createMethodMaps(argsNumber, beforePredicate);
-    argumentsToAfterFunctionMaps = createMethodMaps(argsNumber, afterPredicate);
-    argumentsToPrimaryFunctionMaps = createMethodMaps(argsNumber, primaryPredicate);
+    fillArgumentMaps(clazz, methodName);
 
     this.methodComparator = methodComparator;
     methodsCache = withCache ? new MethodsCacheDefaultImpl() : new MethodsCacheNoOp();
   }
 
-  private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments, String methodComparator, boolean reverse) {
+  private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments, String methodComparatorClass, boolean reverse) {
     Comparator<Method> comparator =
         reverse ?
-            getMethodComparator(methodComparator, arguments).reversed() :
-            getMethodComparator(methodComparator, arguments);
+            getMethodComparator(methodComparatorClass, arguments).reversed() :
+            getMethodComparator(methodComparatorClass, arguments);
 
     return Arrays.stream(arr)
         .map(mapWithClass -> getMethodsFor(mapWithClass.map, mapWithClass.clazz))
@@ -87,16 +78,34 @@ public class GenericFunctionClassHelper {
   }
 
   private static MethodMapWithClass[] applicableMethods(MethodMap[] methodsMaps, Class<?>[] paramsTypes) {
-    MethodMapWithClass[] map = new MethodMapWithClass[paramsTypes.length];
-    for (int i = 0; i < paramsTypes.length; i++) {
-      map[i] = new MethodMapWithClass(methodsMaps[i], paramsTypes[i]);
+    if (methodsMaps == null) {
+      return new MethodMapWithClass[]{};
+    } else {
+      MethodMapWithClass[] map = new MethodMapWithClass[paramsTypes.length];
+      for (int i = 0; i < paramsTypes.length; i++) {
+        map[i] = new MethodMapWithClass(methodsMaps[i], paramsTypes[i]);
+      }
+      return map;
     }
-    return map;
   }
 
   private static Stream<Method> filteredMethods(Class<?> clazz, String methodName) {
     return Arrays.stream(clazz.getDeclaredMethods())
         .filter(m -> m.getName().equals(methodName));
+  }
+
+  private void fillArgumentMaps(Class<?> clazz, String methodName) {
+    Predicate<Method> beforePredicate = method -> method.isAnnotationPresent(BeforeMethod.class);
+    Predicate<Method> afterPredicate = method -> method.isAnnotationPresent(AfterMethod.class);
+    Predicate<Method> primaryPredicate = beforePredicate.or(afterPredicate).negate();
+
+    filteredMethods(clazz, methodName)
+        .collect(Collectors.groupingBy(Method::getParameterCount))
+        .forEach((argsNum, value) -> {
+          argumentsToBeforeFunctionMaps.put(argsNum, createMethodMaps(argsNum, beforePredicate, value.stream()));
+          argumentsToAfterFunctionMaps.put(argsNum, createMethodMaps(argsNum, afterPredicate, value.stream()));
+          argumentsToPrimaryFunctionMaps.put(argsNum, createMethodMaps(argsNum, primaryPredicate, value.stream()));
+        });
   }
 
   public Object runFunction(Object[] arguments) {
@@ -123,15 +132,18 @@ public class GenericFunctionClassHelper {
   }
 
   private List<Method> getAfterMethodsFor(Class<?>[] arguments) {
-    return orderMethods(applicableMethods(argumentsToAfterFunctionMaps, arguments), arguments, methodComparator, true);
+    MethodMapWithClass[] applicableMethods = applicableMethods(argumentsToAfterFunctionMaps.get(arguments.length), arguments);
+    return orderMethods(applicableMethods, arguments, methodComparator, true);
   }
 
   private List<Method> getBeforeMethodsFor(Class<?>[] arguments) {
-    return orderMethods(applicableMethods(argumentsToBeforeFunctionMaps, arguments), arguments, methodComparator, false);
+    MethodMapWithClass[] applicableMethods = applicableMethods(argumentsToBeforeFunctionMaps.get(arguments.length), arguments);
+    return orderMethods(applicableMethods, arguments, methodComparator, false);
   }
 
   private Method getPrimaryMethodFor(Class<?>[] arguments) {
-    List<Method> methods = orderMethods(applicableMethods(argumentsToPrimaryFunctionMaps, arguments), arguments, methodComparator, false);
+    MethodMapWithClass[] applicableMethods = applicableMethods(argumentsToPrimaryFunctionMaps.get(arguments.length), arguments);
+    List<Method> methods = orderMethods(applicableMethods, arguments, methodComparator, false);
 
     if (methods.size() > 0) {
       return methods.get(0);
@@ -140,10 +152,10 @@ public class GenericFunctionClassHelper {
     }
   }
 
-  private MethodMap[] createMethodMaps(int size, Predicate<Method> predicate) {
+  private MethodMap[] createMethodMaps(int size, Predicate<Method> predicate, Stream<Method> methods) {
     MethodMap[] methodMaps = Stream.generate(MethodMap::new).limit(size).toArray(MethodMap[]::new);
 
-    filteredMethods(clazz, methodName)
+    methods
         .filter(predicate)
         .forEach(m -> {
           Class<?>[] argTypes = m.getParameterTypes();

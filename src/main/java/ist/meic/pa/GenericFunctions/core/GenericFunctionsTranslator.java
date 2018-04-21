@@ -11,6 +11,14 @@ import java.util.stream.Collectors;
 
 public class GenericFunctionsTranslator implements Translator {
 
+  private static int getParameterCount(CtMethod method) {
+    try {
+      return method.getParameterTypes().length;
+    } catch (NotFoundException e) {
+      throw new GenericFunctionException("Could not get parameter count for method: " + method.getLongName(), e);
+    }
+  }
+
   @Override
   public void start(ClassPool pool) {
   }
@@ -18,17 +26,22 @@ public class GenericFunctionsTranslator implements Translator {
   @Override
   public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {
     CtClass clazz = pool.get(classname);
+    if (clazz.isFrozen()) {
+      return;
+    }
+
     Optional<Config> config = getConfig(clazz);
 
     if (config.isPresent()) {
       CtMethod[] methods = clazz.getDeclaredMethods();
       // TODO validate methods
 
-      int numArgs = methods[0].getParameterTypes().length;
-
       addHelperField(clazz, renamedMethod(methods[0].getName()), config.get());
 
-      addNewMethod(pool, clazz, numArgs);
+      Arrays.stream(methods)
+          .map(GenericFunctionsTranslator::getParameterCount)
+          .distinct()
+          .forEach(numArgs -> addNewMethod(pool, clazz, numArgs));
 
       changeGenericFunctionMethods(clazz, methods);
     }
@@ -84,20 +97,24 @@ public class GenericFunctionsTranslator implements Translator {
     }
   }
 
-  private void addNewMethod(ClassPool pool, CtClass clazz, int numArgs) throws NotFoundException, CannotCompileException {
-    CtClass[] argsArray = new CtClass[numArgs];
-    CtClass objectClass = pool.get("java.lang.Object");
-    Arrays.fill(argsArray, objectClass);
+  private void addNewMethod(ClassPool pool, CtClass clazz, int numArgs) {
+    try {
+      CtClass[] argsArray = new CtClass[numArgs];
+      CtClass objectClass = pool.get("java.lang.Object");
+      Arrays.fill(argsArray, objectClass);
 
-    String body = "" +
-        "{" +
-        "    Object result = helper$.runFunction($args);" +
-        "    return ($r)result;" +
-        "}";
+      String body = "" +
+          "{" +
+          "    Object result = helper$.runFunction($args);" +
+          "    return ($r)result;" +
+          "}";
 
-    CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", argsArray, new CtClass[]{}, body, clazz);
+      CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", argsArray, new CtClass[]{}, body, clazz);
 
-    clazz.addMethod(newGenMethod);
+      clazz.addMethod(newGenMethod);
+    } catch (CannotCompileException | NotFoundException e) {
+      throw new GenericFunctionException("Could not add new method to class: " + clazz.getName(), e);
+    }
   }
 
   private String renamedMethod(String oldName) {
