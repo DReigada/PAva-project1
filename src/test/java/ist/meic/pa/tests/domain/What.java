@@ -6,31 +6,34 @@ import ist.meic.pa.GenericFunctions.GenericFunction;
 
 @GenericFunction
 public class What {
-    public static void is(Black i) {
-        System.out.print("What is black? ");
-    }
 
-    public static void is(Red i) {
-        System.out.print("What is red? ");
-    }
+  public static StringBuilder sb;
 
-    @BeforeMethod
-    public static void is(Blue o) {
-        System.out.println("Blue ");
-    }
+  public static void is(Black i) {
+    sb.append("What is black? ");
+  }
 
-    @AfterMethod
-    public static void is(Object o) {
-        System.out.print(" Is it an object?");
-    }
+  public static void is(Red i) {
+    sb.append("What is red? ");
+  }
 
-    @AfterMethod
-    public static void is(Color o) {
-        System.out.print(" Is it a color?");
-    }
+  @BeforeMethod
+  public static void is(Blue o) {
+    sb.append("Blue ").append("\n");
+  }
 
-    @AfterMethod
-    public static void is(SuperBlack o) {
-        System.out.print(" It is all of that and much more...");
-    }
+  @AfterMethod
+  public static void is(Object o) {
+    sb.append(" Is it an object?");
+  }
+
+  @AfterMethod
+  public static void is(Color o) {
+    sb.append(" Is it a color?");
+  }
+
+  @AfterMethod
+  public static void is(SuperBlack o) {
+    sb.append(" It is all of that and much more...");
+  }
 }

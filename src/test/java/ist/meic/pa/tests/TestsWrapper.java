@@ -44,6 +44,46 @@ public class TestsWrapper {
   }
 
   @Test
+  public void testH() throws Throwable {
+    runTestClass(TestH.class);
+  }
+
+  @Test
+  public void testI() throws Throwable {
+    runTestClass(TestI.class);
+  }
+
+  @Test
+  public void testJ() throws Throwable {
+    runTestClass(TestJ.class);
+  }
+
+  @Test
+  public void testK() throws Throwable {
+    runTestClass(TestK.class);
+  }
+
+  @Test
+  public void testL() throws Throwable {
+    runTestClass(TestL.class);
+  }
+
+  @Test
+  public void testM() throws Throwable {
+    runTestClass(TestM.class);
+  }
+
+  @Test
+  public void testN() throws Throwable {
+    runTestClass(TestN.class);
+  }
+
+  @Test
+  public void testO() throws Throwable {
+    runTestClass(TestO.class);
+  }
+
+  @Test
   public void testP() throws Throwable {
     runTestClass(TestP.class);
   }

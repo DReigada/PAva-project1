@@ -6,15 +6,23 @@ import ist.meic.pa.GenericFunctions.GenericFunction;
 
 @GenericFunction
 public class MakeIt {
-    public static void ddouble(C1 c) {System.out.println("C1");}
+  public static StringBuilder sb;
 
-    @BeforeMethod
-    @AfterMethod
-    public static void ddouble(Object c) {System.out.println("Object");}
+  public static void ddouble(C1 c) {
+    sb.append("C1").append("\n");
+  }
 
-    @BeforeMethod
-    @AfterMethod
-    public static void ddouble(Foo c) {System.out.println("Foo");}
+  @BeforeMethod
+  @AfterMethod
+  public static void ddouble(Object c) {
+    sb.append("Object").append("\n");
+  }
+
+  @BeforeMethod
+  @AfterMethod
+  public static void ddouble(Foo c) {
+    sb.append("Foo").append("\n");
+  }
 
 }
 
