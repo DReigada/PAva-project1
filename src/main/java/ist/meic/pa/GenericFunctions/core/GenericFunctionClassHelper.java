@@ -38,7 +38,7 @@ public class GenericFunctionClassHelper {
 
     Predicate<Method> beforePredicate = method -> method.isAnnotationPresent(BeforeMethod.class);
     Predicate<Method> afterPredicate = method -> method.isAnnotationPresent(AfterMethod.class);
-    Predicate<Method> primaryPredicate = beforePredicate.and(afterPredicate).negate();
+    Predicate<Method> primaryPredicate = beforePredicate.or(afterPredicate).negate();
 
     argumentsToBeforeFunctionMaps = createMethodMaps(argsNumber, beforePredicate);
     argumentsToAfterFunctionMaps = createMethodMaps(argsNumber, afterPredicate);
