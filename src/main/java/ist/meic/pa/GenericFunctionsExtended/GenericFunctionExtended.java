@@ -6,4 +6,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface GenericFunctionExtended {
   boolean useCache() default true;
+
+  String methodComparator() default "";
 }

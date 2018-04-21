@@ -7,6 +7,7 @@ import javassist.*;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class GenericFunctionsTranslator implements Translator {
 
@@ -54,9 +55,17 @@ public class GenericFunctionsTranslator implements Translator {
   private void addHelperField(CtClass clazz, String methodName, Config config) throws CannotCompileException {
     String helperName = "ist.meic.pa.GenericFunctions.core.GenericFunctionClassHelper";
 
+    String[] helperArgs = new String[]{
+        clazz.getName() + ".class",
+        "\"" + methodName + "\"",
+        Boolean.toString(config.useCache),
+        "\"" + config.methodComparator + "\""
+    };
+
+    String joinedArgs = Arrays.stream(helperArgs).collect(Collectors.joining(", ", "(", ")"));
+
     CtField helperField = CtField.make(
-        "public static final " + helperName + " helper$ = " +
-            "new " + helperName + "(" + clazz.getName() + ".class, \"" + methodName + "\"," + config.useCache + ");", clazz);
+        "public static final " + helperName + " helper$ = new " + helperName + joinedArgs + ";", clazz);
 
     clazz.addField(helperField);
   }

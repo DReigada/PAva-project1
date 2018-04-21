@@ -8,12 +8,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
-public class DefaultMethodComparator implements Comparator<Method> {
-
-  private Class<?>[] referenceArguments;
+public class DefaultMethodComparator extends AbstractMethodComparator {
 
   public DefaultMethodComparator(Class<?>[] referenceArguments) {
-    this.referenceArguments = referenceArguments;
+    super(referenceArguments);
   }
 
   @Override

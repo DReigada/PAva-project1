@@ -3,8 +3,11 @@ package ist.meic.pa.GenericFunctions.core;
 
 import ist.meic.pa.GenericFunctions.AfterMethod;
 import ist.meic.pa.GenericFunctions.BeforeMethod;
+import ist.meic.pa.GenericFunctions.exceptions.GenericFunctionException;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
-import ist.meic.pa.GenericFunctions.util.*;
+import ist.meic.pa.GenericFunctions.util.MethodMap;
+import ist.meic.pa.GenericFunctions.util.MethodMapWithClass;
+import ist.meic.pa.GenericFunctions.util.MethodsWrapper;
 import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
 import ist.meic.pa.GenericFunctions.util.cache.MethodsCacheNoOp;
 import ist.meic.pa.GenericFunctionsExtended.util.cache.MethodsCacheDefaultImpl;
@@ -23,9 +26,10 @@ public class GenericFunctionClassHelper {
   private final MethodMap[] argumentsToBeforeFunctionMaps;
   private final MethodMap[] argumentsToAfterFunctionMaps;
 
+  private final String methodComparator;
   private final MethodsCache methodsCache;
 
-  public GenericFunctionClassHelper(Class<?> clazz, String methodName, boolean withCache) {
+  public GenericFunctionClassHelper(Class<?> clazz, String methodName, boolean withCache, String methodComparator) {
     this.clazz = clazz;
     this.methodName = methodName;
 
@@ -39,11 +43,12 @@ public class GenericFunctionClassHelper {
     argumentsToAfterFunctionMaps = createMethodMaps(argsNumber, afterPredicate);
     argumentsToPrimaryFunctionMaps = createMethodMaps(argsNumber, primaryPredicate);
 
+    this.methodComparator = methodComparator;
     methodsCache = withCache ? new MethodsCacheDefaultImpl() : new MethodsCacheNoOp();
   }
 
-  private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments) {
-    DefaultMethodComparator comparator = new DefaultMethodComparator(arguments);
+  private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments, String methodComparator) {
+    AbstractMethodComparator comparator = getMethodComparator(methodComparator, arguments);
 
     return Arrays.stream(arr)
         .map(mapWithClass -> getMethodsFor(mapWithClass.map, mapWithClass.clazz))
@@ -54,10 +59,21 @@ public class GenericFunctionClassHelper {
         .filter(set -> set.size() > 0)
         .map(set -> {
           List<Method> list = new ArrayList<>(set);
-          list.sort(comparator); // TODO: sort is not necessary since only the first value is needed
+          list.sort(comparator);
           return list;
         })
         .orElse(Collections.emptyList());
+  }
+
+  private static AbstractMethodComparator getMethodComparator(String comparator, Class<?>[] arguments) {
+    try {
+      return (AbstractMethodComparator) Class
+          .forName(comparator)
+          .getConstructor(Class[].class)
+          .newInstance((Object) arguments);
+    } catch (ReflectiveOperationException e) {
+      throw new GenericFunctionException("Could not instantiate MethodComparator: " + comparator, e);
+    }
   }
 
   private static LinkedHashSet<Method> getMethodsFor(MethodMap param, Class<?> clazz) {
@@ -103,15 +119,15 @@ public class GenericFunctionClassHelper {
   }
 
   private List<Method> getAfterMethodsFor(Class<?>[] arguments) {
-    return orderMethods(applicableMethods(argumentsToAfterFunctionMaps, arguments), arguments);
+    return orderMethods(applicableMethods(argumentsToAfterFunctionMaps, arguments), arguments, methodComparator);
   }
 
   private List<Method> getBeforeMethodsFor(Class<?>[] arguments) {
-    return orderMethods(applicableMethods(argumentsToBeforeFunctionMaps, arguments), arguments);
+    return orderMethods(applicableMethods(argumentsToBeforeFunctionMaps, arguments), arguments, methodComparator);
   }
 
   private Method getPrimaryMethodFor(Class<?>[] arguments) {
-    List<Method> methods = orderMethods(applicableMethods(argumentsToPrimaryFunctionMaps, arguments), arguments);
+    List<Method> methods = orderMethods(applicableMethods(argumentsToPrimaryFunctionMaps, arguments), arguments, methodComparator);
 
     if (methods.size() > 0) {
       return methods.get(0);
