@@ -1,9 +1,11 @@
 package ist.meic.pa.GenericFunctions.core;
 
 import ist.meic.pa.GenericFunctions.GenericFunction;
+import ist.meic.pa.GenericFunctionsExtended.GenericFunctionExtended;
 import javassist.*;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class GenericFunctionsTranslator implements Translator {
 
@@ -15,15 +17,15 @@ public class GenericFunctionsTranslator implements Translator {
   public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {
     CtClass clazz = pool.get(classname);
     try {
-      Object annot = clazz.getAnnotation(GenericFunction.class);
+      Optional<Config> config = getConfig(clazz);
 
-      if (annot != null) {
+      if (config.isPresent()) {
         CtMethod[] methods = clazz.getDeclaredMethods();
         // TODO validate methods
 
         int numArgs = methods[0].getParameterTypes().length;
 
-        addHelperField(clazz, renamedMethod(methods[0].getName()));
+        addHelperField(clazz, renamedMethod(methods[0].getName()), config.get());
 
         addNewMethod(pool, clazz, numArgs);
 
@@ -35,12 +37,25 @@ public class GenericFunctionsTranslator implements Translator {
     }
   }
 
-  private void addHelperField(CtClass clazz, String methodName) throws CannotCompileException {
+  private Optional<Config> getConfig(CtClass clazz) throws ClassNotFoundException {
+    GenericFunctionExtended extendedAnnotation = (GenericFunctionExtended) clazz.getAnnotation(GenericFunctionExtended.class);
+    GenericFunction defaultAnnotation = (GenericFunction) clazz.getAnnotation(GenericFunction.class);
+
+    if (extendedAnnotation != null) {
+      return Optional.of(new Config(extendedAnnotation));
+    } else if (defaultAnnotation != null) {
+      return Optional.of(new Config(defaultAnnotation));
+    } else {
+      return Optional.empty();
+    }
+  }
+
+  private void addHelperField(CtClass clazz, String methodName, Config config) throws CannotCompileException {
     String helperName = "ist.meic.pa.GenericFunctions.core.GenericFunctionClassHelper";
 
     CtField helperField = CtField.make(
         "public static final " + helperName + " helper$ = " +
-            "new " + helperName + "(" + clazz.getName() + ".class, \"" + methodName + "\");", clazz);
+            "new " + helperName + "(" + clazz.getName() + ".class, \"" + methodName + "\"," + config.useCache + ");", clazz);
 
     clazz.addField(helperField);
   }

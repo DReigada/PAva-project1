@@ -4,10 +4,8 @@ package ist.meic.pa.GenericFunctions.core;
 import ist.meic.pa.GenericFunctions.AfterMethod;
 import ist.meic.pa.GenericFunctions.BeforeMethod;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
-import ist.meic.pa.GenericFunctions.util.MethodMap;
-import ist.meic.pa.GenericFunctions.util.MethodMapWithClass;
-import ist.meic.pa.GenericFunctions.util.MethodsCache;
-import ist.meic.pa.GenericFunctions.util.MethodsWrapper;
+import ist.meic.pa.GenericFunctions.util.*;
+import ist.meic.pa.GenericFunctionsExtended.util.MethodsCacheDefaultImpl;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -25,7 +23,7 @@ public class GenericFunctionClassHelper {
 
   private final MethodsCache methodsCache;
 
-  public GenericFunctionClassHelper(Class<?> clazz, String methodName) {
+  public GenericFunctionClassHelper(Class<?> clazz, String methodName, boolean withCache) {
     this.clazz = clazz;
     this.methodName = methodName;
 
@@ -39,7 +37,7 @@ public class GenericFunctionClassHelper {
     argumentsToAfterFunctionMaps = createMethodMaps(argsNumber, afterPredicate);
     argumentsToPrimaryFunctionMaps = createMethodMaps(argsNumber, primaryPredicate);
 
-    methodsCache = new MethodsCache();
+    methodsCache = withCache ? new MethodsCacheDefaultImpl() : new MethodsCacheNoOp();
   }
 
   private static List<Method> orderMethods(MethodMapWithClass[] arr, Class<?>[] arguments) {
@@ -82,25 +80,24 @@ public class GenericFunctionClassHelper {
   public Object runFunction(Object[] arguments) {
     Class<?>[] paramsClasses = Arrays.stream(arguments).map(Object::getClass).toArray(Class[]::new);
 
-    Optional<MethodsWrapper> cacheOpt = methodsCache.get(paramsClasses);
-
-    MethodsWrapper wrap = cacheOpt
-        .orElseGet(() -> {
-          List<Method> beforeMethods = getBeforeMethodsFor(paramsClasses);
-          List<Method> afterMethods = getAfterMethodsFor(paramsClasses);
-          Method primaryMethod = getPrimaryMethodFor(paramsClasses);
-
-          MethodsWrapper newWraped = new MethodsWrapper(beforeMethods, afterMethods, primaryMethod);
-
-          methodsCache.put(paramsClasses, newWraped);
-          return newWraped;
-        });
+    MethodsWrapper wrap = methodsCache.getOrInsertIfNotExists(paramsClasses, () -> calculateMethodsFor(paramsClasses));
 
     wrap.before.forEach(m -> ReflectionHelpers.invokeMethod(m, arguments));
     Object primaryResult = ReflectionHelpers.invokeMethod(wrap.primary, arguments);
     wrap.after.forEach(m -> ReflectionHelpers.invokeMethod(m, arguments));
 
     return primaryResult;
+  }
+
+  private MethodsWrapper calculateMethodsFor(Class<?>[] paramsClasses) {
+    List<Method> beforeMethods = getBeforeMethodsFor(paramsClasses);
+    List<Method> afterMethods = getAfterMethodsFor(paramsClasses);
+    Method primaryMethod = getPrimaryMethodFor(paramsClasses);
+
+    MethodsWrapper newWraped = new MethodsWrapper(beforeMethods, afterMethods, primaryMethod);
+
+    methodsCache.put(paramsClasses, newWraped);
+    return newWraped;
   }
 
   private List<Method> getAfterMethodsFor(Class<?>[] arguments) {
