@@ -18,37 +18,36 @@ public class GenericFunctionsTranslator implements Translator {
   @Override
   public void onLoad(ClassPool pool, String classname) throws NotFoundException, CannotCompileException {
     CtClass clazz = pool.get(classname);
-    try {
-      Optional<Config> config = getConfig(clazz);
+    Optional<Config> config = getConfig(clazz);
 
-      if (config.isPresent()) {
-        CtMethod[] methods = clazz.getDeclaredMethods();
-        // TODO validate methods
+    if (config.isPresent()) {
+      CtMethod[] methods = clazz.getDeclaredMethods();
+      // TODO validate methods
 
-        int numArgs = methods[0].getParameterTypes().length;
+      int numArgs = methods[0].getParameterTypes().length;
 
-        addHelperField(clazz, renamedMethod(methods[0].getName()), config.get());
+      addHelperField(clazz, renamedMethod(methods[0].getName()), config.get());
 
-        addNewMethod(pool, clazz, numArgs);
+      addNewMethod(pool, clazz, numArgs);
 
-        changeGenericFunctionMethods(clazz, methods);
-      }
-
-    } catch (ClassNotFoundException e) {
-      throw new GenericFunctionException("This should never happen", e);
+      changeGenericFunctionMethods(clazz, methods);
     }
   }
 
-  private Optional<Config> getConfig(CtClass clazz) throws ClassNotFoundException {
-    GenericFunctionExtended extendedAnnotation = (GenericFunctionExtended) clazz.getAnnotation(GenericFunctionExtended.class);
-    GenericFunction defaultAnnotation = (GenericFunction) clazz.getAnnotation(GenericFunction.class);
+  private Optional<Config> getConfig(CtClass clazz) {
+    try {
+      GenericFunctionExtended extendedAnnotation = (GenericFunctionExtended) clazz.getAnnotation(GenericFunctionExtended.class);
+      GenericFunction defaultAnnotation = (GenericFunction) clazz.getAnnotation(GenericFunction.class);
 
-    if (extendedAnnotation != null) {
-      return Optional.of(new Config(extendedAnnotation));
-    } else if (defaultAnnotation != null) {
-      return Optional.of(new Config(defaultAnnotation));
-    } else {
-      return Optional.empty();
+      if (extendedAnnotation != null) {
+        return Optional.of(new Config(extendedAnnotation));
+      } else if (defaultAnnotation != null) {
+        return Optional.of(new Config(defaultAnnotation));
+      } else {
+        return Optional.empty();
+      }
+    } catch (ClassNotFoundException e) {
+      throw new GenericFunctionException("Failed to get annotation from class. (This should never happen)", e);
     }
   }
 
