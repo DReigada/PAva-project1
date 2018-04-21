@@ -1,6 +1,6 @@
-package ist.meic.pa.GenericFunctionsExtended.util;
+package ist.meic.pa.GenericFunctionsExtended.util.cache;
 
-import ist.meic.pa.GenericFunctions.util.MethodsCache;
+import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
 import ist.meic.pa.GenericFunctions.util.MethodsWrapper;
 import ist.meic.pa.GenericFunctions.util.ParametersClassWrapper;
 

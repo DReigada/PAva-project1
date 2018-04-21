@@ -5,7 +5,9 @@ import ist.meic.pa.GenericFunctions.AfterMethod;
 import ist.meic.pa.GenericFunctions.BeforeMethod;
 import ist.meic.pa.GenericFunctions.exceptions.NoApplicableGenericFunctionException;
 import ist.meic.pa.GenericFunctions.util.*;
-import ist.meic.pa.GenericFunctionsExtended.util.MethodsCacheDefaultImpl;
+import ist.meic.pa.GenericFunctions.util.cache.MethodsCache;
+import ist.meic.pa.GenericFunctions.util.cache.MethodsCacheNoOp;
+import ist.meic.pa.GenericFunctionsExtended.util.cache.MethodsCacheDefaultImpl;
 
 import java.lang.reflect.Method;
 import java.util.*;
