@@ -1,0 +1,35 @@
+\documentclass[14pt]{beamer}
+  \usepackage{minted}
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[english]{babel}
+  \usepackage[utf8x]{inputenc}
+
+  \usetheme{default} % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default} % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+
+  \title[Your Short Title]{Your Presentation}
+  \author{Daniel Reigada}
+  \institute{IST}
+  \date{Date of Presentation}
+
+  \begin{document}
+
+  \begin{frame}
+    \titlepage
+  \end{frame}
+
+  \section{Introduction}
+
+  \begin{frame}[fragile]{Introduction}
+    \begin{figure}
+    \begin{minted}{python}
+      python("as")
+    \end{minted}
+    \end{figure}
+  \end{frame}
+
+  \end{document}
