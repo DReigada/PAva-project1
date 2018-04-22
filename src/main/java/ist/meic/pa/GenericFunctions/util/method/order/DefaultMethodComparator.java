@@ -1,6 +1,6 @@
 package ist.meic.pa.GenericFunctions.util.method.order;
 
-import ist.meic.pa.GenericFunctions.core.ReflectionHelpers;
+import ist.meic.pa.GenericFunctions.core.MethodHelpers;
 import ist.meic.pa.GenericFunctions.util.Pair;
 import ist.meic.pa.GenericFunctions.util.Streams;
 
@@ -54,7 +54,7 @@ public class DefaultMethodComparator extends AbstractMethodComparator {
       } else if (c2.isAssignableFrom(c1)) {
         return -1;
       } else {
-        Stream<Class<?>> superClasses = ReflectionHelpers.getSuperClassesOf(referenceClass);
+        Stream<Class<?>> superClasses = MethodHelpers.getSuperClassesOf(referenceClass);
 
         Class<?> first = superClasses
             .filter(c -> c.equals(c1) || c.equals(c2))

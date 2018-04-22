@@ -19,6 +19,10 @@ public class GenericFunctionsTranslator implements Translator {
     }
   }
 
+  private static String renamedMethod(String oldName) {
+    return oldName + "$";
+  }
+
   @Override
   public void start(ClassPool pool) {
   }
@@ -115,9 +119,5 @@ public class GenericFunctionsTranslator implements Translator {
     } catch (CannotCompileException | NotFoundException e) {
       throw new GenericFunctionException("Could not add new method to class: " + clazz.getName(), e);
     }
-  }
-
-  private String renamedMethod(String oldName) {
-    return oldName + "$";
   }
 }
