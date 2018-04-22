@@ -1,35 +1,101 @@
 \documentclass[14pt]{beamer}
-  \usepackage{minted}
-  \usepackage[T1]{fontenc}
-  \usepackage{lmodern}
-  \usepackage[english]{babel}
-  \usepackage[utf8x]{inputenc}
 
-  \usetheme{default} % or try Darmstadt, Madrid, Warsaw, ...
-  \usecolortheme{default} % or try albatross, beaver, crane, ...
-  \usefonttheme{default} % or try serif, structurebold, ...
-  \setbeamertemplate{navigation symbols}{}
-  \setbeamertemplate{caption}[numbered]
+\usepackage{pgfpages}
+\usepackage{minted}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
 
-  \title[Your Short Title]{Your Presentation}
-  \author{Daniel Reigada}
-  \institute{IST}
-  \date{Date of Presentation}
+\usetheme{default} % or try Darmstadt, Madrid, Warsaw, ...
+\usecolortheme{default} % or try albatross, beaver, crane, ...
+\usefonttheme{default} % or try serif, structurebold, ...
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}[numbered]
 
-  \begin{document}
+% For presenter notes
+%\setbeameroption{show notes on second screen}
 
-  \begin{frame}
-    \titlepage
-  \end{frame}
 
-  \section{Introduction}
+\addtobeamertemplate{navigation symbols}{}{%
+  \usebeamerfont{footline}%
+  \usebeamercolor[fg]{footline}%
+  \hspace{1em}%
+  \insertframenumber/\inserttotalframenumber
+  }
+  
+\title{Generic Functions in Java}
+\author{Daniel Reigada}
+\institute{IST - Advanced Programming}
+% \date{Date of Presentation}
 
-  \begin{frame}[fragile]{Introduction}
-    \begin{figure}
-    \begin{minted}{python}
-      python("as")
-    \end{minted}
-    \end{figure}
-  \end{frame}
+\begin{document}
 
-  \end{document}
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Setup on class load (Javassist Translator)}
+  \note{
+    \begin{enumerate}
+      \item Add field with helper object
+      \item Rename all functions
+      \item Create new methods in with the old name of the renamed ones that only call the helper object
+    \end{enumerate}
+    
+    Renaming the functions instead of using a Expression editor:
+    the overhead only happens when the class is loaded insted of when a class that calls the method is loaded
+  }
+
+  \begin{enumerate}
+    \item Add field with helper object
+    \item Rename all functions
+    \item Create new methods in place of the renamed ones that only call the helper object.
+  \end{enumerate}
+
+\end{frame}
+
+\begin{frame}{Method call}
+  \begin{figure}
+    \includegraphics[height=0.78\textheight]{figures/callChain.png}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{Method resolution}
+  \note{ 
+    \begin{enumerate}
+      \item When the helper class is instantiated a mapping\
+        between argument types and applicable methods is generated (to create a cache)
+      \item When a method is invoked: {
+        \begin{enumerate}
+          \item Filter methods applicable to the given arguments 
+          \item Sort them by specifity
+          \item Invoke the most specific
+        \end{enumerate}
+      }
+    \end{enumerate}
+  }
+
+  \begin{enumerate}
+    \item When the helper class is instantiated a mapping\
+      between argument types and methods is created
+    \item When a method is invoked: {
+      \begin{enumerate}
+        \item Filter methods applicable to the given arguments 
+        \item Sort them by specifity
+        \item Invoke the most specific
+      \end{enumerate}
+    }
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Extensions}
+  \begin{itemize}
+    \item Method caching
+    \item Extensible to different ordering of methods
+  \end{itemize}
+\end{frame}
+
+\end{document}
