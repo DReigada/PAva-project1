@@ -15,4 +15,9 @@ public class BenchmarksWrapper {
     runTestClass(CacheVsNoCacheTimeBenchmark.class);
   }
 
+  @Test
+  public void cacheVsNoGenericTimeBenchmark() throws Throwable {
+    runTestClass(CacheVsNoGenericTimeBenchmark.class);
+  }
+
 }
