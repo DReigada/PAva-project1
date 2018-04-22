@@ -6,8 +6,11 @@ import ist.meic.pa.GenericFunctions.util.Streams;
 
 import java.lang.reflect.Method;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DefaultMethodComparator extends AbstractMethodComparator {
@@ -56,11 +59,7 @@ public class DefaultMethodComparator extends AbstractMethodComparator {
       } else {
         Stream<Class<?>> superClasses = MethodHelpers.getSuperClassesOf(referenceClass);
 
-        Class<?> first = superClasses
-            .filter(c -> c.equals(c1) || c.equals(c2))
-            .limit(2)
-            .findFirst()
-            .orElseThrow(() -> new RuntimeException("Can not compare unrelated types: " + c1.getName() + " and " + c2.getName() + " given reference: " + referenceClass.getName()));
+        Class<?> first = filterClasses(superClasses, c1, c2);
 
         if (first.equals(c1)) {
           return -1;
@@ -68,6 +67,24 @@ public class DefaultMethodComparator extends AbstractMethodComparator {
           return 1;
         }
       }
+    }
+
+    private Class<?> filterClasses(Stream<Class<?>> superClasses, Class<?> c1, Class<?> c2) {
+      List<Class<?>> arr = superClasses
+          .filter(c -> c.equals(c1) || c.equals(c2))
+          .limit(2)
+          .collect(Collectors.toList());
+
+      Supplier<RuntimeException> errorSupplier =
+          () -> new RuntimeException("Can not compare unrelated types: " + c1.getName() + " and " + c2.getName() + " given reference: " + referenceClass.getName());
+
+      return arr.stream()
+          .filter(c -> !c.isInterface()) // we give priority to classes over interfaces
+          .findFirst()
+          .orElse(
+              arr.stream()
+                  .findFirst()
+                  .orElseThrow(errorSupplier));
     }
   }
 

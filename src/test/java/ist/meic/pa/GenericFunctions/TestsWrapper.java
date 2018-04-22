@@ -32,4 +32,9 @@ public class TestsWrapper {
     runTestClass(ShouldSelectClosestInterface.class);
   }
 
+  @Test
+  public void priorityClassesOverInterfaces() throws Throwable {
+    runTestClass(PriorityClassesOverInterfaces.class);
+  }
+
 }
