@@ -42,11 +42,6 @@ public class GenericFunctionsTranslator implements Translator {
 
       addHelperField(clazz, renamedMethod(methods[0].getName()), config.get());
 
-      Arrays.stream(methods)
-          .map(GenericFunctionsTranslator::getParameterCount)
-          .distinct()
-          .forEach(numArgs -> addNewMethod(pool, clazz, numArgs));
-
       changeGenericFunctionMethods(clazz, methods);
     }
   }
@@ -91,32 +86,13 @@ public class GenericFunctionsTranslator implements Translator {
       CtMethod newMethod = new CtMethod(method, clazz, null);
       newMethod.setBody("" +
           "{" +
-          "    return ($r) newMethod$($$);" +
+          "    return ($r) helper$.runFunction($args);" +
           "}"
       );
 
       method.setName(renamedMethod(method.getName()));
 
       clazz.addMethod(newMethod);
-    }
-  }
-
-  private void addNewMethod(ClassPool pool, CtClass clazz, int numArgs) {
-    try {
-      CtClass[] argsArray = new CtClass[numArgs];
-      CtClass objectClass = pool.get("java.lang.Object");
-      Arrays.fill(argsArray, objectClass);
-
-      String body = "" +
-          "{" +
-          "    return ($r) helper$.runFunction($args);" +
-          "}";
-
-      CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", argsArray, new CtClass[]{}, body, clazz);
-
-      clazz.addMethod(newGenMethod);
-    } catch (CannotCompileException | NotFoundException e) {
-      throw new GenericFunctionException("Could not add new method to class: " + clazz.getName(), e);
     }
   }
 }
