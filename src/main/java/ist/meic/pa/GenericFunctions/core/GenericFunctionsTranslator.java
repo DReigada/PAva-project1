@@ -109,8 +109,7 @@ public class GenericFunctionsTranslator implements Translator {
 
       String body = "" +
           "{" +
-          "    Object result = helper$.runFunction($args);" +
-          "    return ($r)result;" +
+          "    return ($r) helper$.runFunction($args);" +
           "}";
 
       CtMethod newGenMethod = CtNewMethod.make(Modifier.STATIC, objectClass, "newMethod$", argsArray, new CtClass[]{}, body, clazz);
