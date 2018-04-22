@@ -22,6 +22,10 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+jar{
+    archiveName 'genericFunctions.jar'
+}
+
 test {
     testLogging {
         outputs.upToDateWhen { false }
@@ -41,3 +45,4 @@ task fatJar(type: Jar) {
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
+
