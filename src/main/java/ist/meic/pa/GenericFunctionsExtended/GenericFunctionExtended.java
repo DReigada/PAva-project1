@@ -1,5 +1,8 @@
 package ist.meic.pa.GenericFunctionsExtended;
 
+import ist.meic.pa.GenericFunctions.util.method.order.AbstractMethodComparator;
+import ist.meic.pa.GenericFunctions.util.method.order.DefaultMethodComparator;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
@@ -7,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface GenericFunctionExtended {
   boolean useCache() default true;
 
-  String methodComparator() default "";
+  Class<? extends AbstractMethodComparator> methodComparator() default DefaultMethodComparator.class;
 }

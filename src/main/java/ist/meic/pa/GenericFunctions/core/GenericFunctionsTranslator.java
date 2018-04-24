@@ -70,7 +70,7 @@ public class GenericFunctionsTranslator implements Translator {
         clazz.getName() + ".class",
         "\"" + methodName + "\"",
         Boolean.toString(config.useCache),
-        "\"" + config.methodComparator + "\""
+        "\"" + config.methodComparator.getName() + "\""
     };
 
     String joinedArgs = Arrays.stream(helperArgs).collect(Collectors.joining(", ", "(", ")"));
