@@ -1,31 +1,8 @@
 package ist.meic.pa.GenericFunctionsExtended;
 
-import java.util.Vector;
+import ist.meic.pa.GenericFunctionsExtended.domain.WithCacheCom;
 
 import static org.junit.Assert.assertEquals;
-
-@GenericFunctionExtended(useCache = true)
-interface WithCacheCom {
-
-  public static Object bine(Object a, Object b) {
-    Vector<Object> v = new Vector<Object>();
-    v.add(a);
-    v.add(b);
-    return v;
-  }
-
-  public static Integer bine(Integer a, Integer b) {
-    return a + b;
-  }
-
-  public static Object bine(String a, Object b) {
-    return a + ", " + b + "!";
-  }
-
-  public static Object bine(String a, Integer b) {
-    return (b == 0) ? "" : a + bine(a, b - 1);
-  }
-}
 
 public class Test1WithCache {
 
