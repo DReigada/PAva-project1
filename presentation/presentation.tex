@@ -1,4 +1,4 @@
-\documentclass[14pt]{beamer}
+\documentclass[13pt]{beamer}
 
 \usepackage{pgfpages}
 \usepackage{minted}
@@ -6,15 +6,16 @@
 \usepackage{lmodern}
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
-
+\usepackage{graphicx}
 \usetheme{default} % or try Darmstadt, Madrid, Warsaw, ...
 \usecolortheme{default} % or try albatross, beaver, crane, ...
 \usefonttheme{default} % or try serif, structurebold, ...
 \setbeamertemplate{navigation symbols}{}
 \setbeamertemplate{caption}[numbered]
 
+
 % For presenter notes
-%\setbeameroption{show notes on second screen}
+%g\setbeameroption{show notes on second screen}
 
 
 \addtobeamertemplate{navigation symbols}{}{%
@@ -96,6 +97,22 @@
     \item Method caching
     \item Extensible to different ordering of methods
   \end{itemize}
+\end{frame}
+
+\begin{frame}{Cache Comparison}
+    \begin{table}[]
+      \centering
+      \resizebox{\textwidth}{!}{
+        \begin{tabular}{llllll}
+                    & 1    & 10000 & 100000 & 1000000 &  \\
+        No cache    & 154  & 156.8 & 830.8  & 7929.7  &  \\
+        With cache  & 27.4 & 25.1  & 49.8   & 130.9   &  \\
+        Java        & 0.2  & 0.6   & 0.7    & 0.4     & 
+        \end{tabular}
+      }
+      \caption{Time comparison in milliseconds}
+      \label{comparison-table}
+      \end{table}
 \end{frame}
 
 \end{document}
