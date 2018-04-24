@@ -2,7 +2,9 @@ package ist.meic.pa.GenericFunctionsExtended.domain;
 
 import ist.meic.pa.GenericFunctionsExtended.GenericFunctionExtended;
 
-@GenericFunctionExtended(methodComparator = ReversedComparator.class)
+@GenericFunctionExtended(
+    useCache = false,
+    methodComparator = ReversedComparator.class)
 public interface Rever {
   static String sed(Object o) {
     return "Object";

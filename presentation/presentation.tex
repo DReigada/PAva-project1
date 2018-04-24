@@ -24,6 +24,14 @@
   \hspace{1em}%
   \insertframenumber/\inserttotalframenumber
   }
+
+\newcommand\Wider[2][3em]{%
+\makebox[\linewidth][c]{%
+  \begin{minipage}{\dimexpr\textwidth+#1\relax}
+  \raggedright#2
+  \end{minipage}%
+  }%
+}
   
 \title{Generic Functions in Java}
 \author{Daniel Reigada}
@@ -95,7 +103,7 @@
 \begin{frame}{Extensions}
   \begin{itemize}
     \item Method caching
-    \item Extensible to different ordering of methods
+    \item Allowing custom ordering of methods
   \end{itemize}
 \end{frame}
 
@@ -110,9 +118,68 @@
         Java        & 0.2  & 0.6   & 0.7    & 0.4     & 
         \end{tabular}
       }
-      \caption{Time comparison in milliseconds}
+      \caption{Time comparison by the number of function calls (milliseconds)}
       \label{comparison-table}
       \end{table}
+\end{frame}
+
+\begin{frame}[fragile]{Custom Method Ordering (Comparator)}
+  \begin{minted}[fontsize=\footnotesize]{java}
+    public class ReversedComparator extends AbstractMethodComparator {
+      /* ... */
+
+      @Override
+      public int compare(Method m1, Method m2) {
+        boolean m1FirstIsObject =
+          m1.getParameterTypes()[0].equals(Object.class);
+        boolean m2FirstIsObject =
+          m2.getParameterTypes()[0].equals(Object.class);
+
+        if (m1FirstIsObject && !m2FirstIsObject) {
+          return 1;
+        } else if (!m1FirstIsObject && m2FirstIsObject) {
+          return -1;
+        } else {
+          return defaultComp.reversed().compare(m1, m2);
+        }
+      }
+    }
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Custom Method Ordering (Generic Function)}
+  \begin{minted}[fontsize=\footnotesize]{java}
+    @GenericFunctionExtended(
+      useCache = false,
+      methodComparator = ReversedComparator.class)
+      public interface Rever {
+        static String sed(Object o) { return "Object"; }
+      
+        static String sed(MyInterface1 o) { return "MyInterface1"; }
+    
+        static String sed(MyClass1 o) { return "MyClass1"; }
+
+        static String sed(MyClass2 o) { return "MyClass2"; }
+      }
+  \end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Custom Method Ordering}
+  \begin{minted}[fontsize=\footnotesize]{java}
+    interface MyInterface1 {}
+    class MyClass1 implements MyInterface1 {}
+    
+    class MyClass2 {}
+  \end{minted}
+
+  \vspace{5mm} %5mm vertical space
+
+  \begin{minted}[fontsize=\footnotesize]{java}
+    Rever.sed((Object) new MyClass1());
+    // "MyInterface1"
+    Rever.sed((Object) new MyClass2());
+    // "MyClass2"
+  \end{minted}
 \end{frame}
 
 \end{document}
