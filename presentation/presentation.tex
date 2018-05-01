@@ -15,7 +15,7 @@
 
 
 % For presenter notes
-%g\setbeameroption{show notes on second screen}
+\setbeameroption{show notes on second screen}
 
 
 \addtobeamertemplate{navigation symbols}{}{%
@@ -42,19 +42,24 @@
 
 \begin{frame}
   \titlepage
+  \note{
+    I will start by presenting how I implemented my solution and then I will show the extensions I've made
+  }
 \end{frame}
 
 \section{Introduction}
 
 \begin{frame}{Setup on class load (Javassist Translator)}
   \note{
+    Starting with the class loader Translator, since writing javassist is error-prone,
+    i've decided to put most logic in an helper class that is called from the javassist code
     \begin{enumerate}
       \item Add field with helper object
       \item Rename all functions
       \item Create new methods in with the old name of the renamed ones that only call the helper object
     \end{enumerate}
     
-    Renaming the functions instead of using a Expression editor:
+    Renaming the functions instead of using an Expression editor:
     the overhead only happens when the class is loaded insted of when a class that calls the method is loaded
   }
 
@@ -101,6 +106,9 @@
 \end{frame}
 
 \begin{frame}{Extensions}
+  \note{
+    I've implemented two extensions, method caching and custom method order
+  }
   \begin{itemize}
     \item Method caching
     \item Allowing custom ordering of methods
@@ -108,11 +116,21 @@
 \end{frame}
 
 \begin{frame}{Cache Comparison}
+  \note{
+    Method caching is not that interesting but it has a huge improvement in performance
+    
+    For normal java we can see that the JIT compiler optimizes the calls really well
+    
+    But if we compare the cache version with the normal one we see that the improvements are much more significant
+    
+    Almost two orders of magnitude faster when making a million calls
+  }
+
     \begin{table}[]
       \centering
       \resizebox{\textwidth}{!}{
         \begin{tabular}{llllll}
-                    & 1    & 10000 & 100000 & 1000000 &  \\
+                    & 1    & 10 000 & 100 000 & 1 000 000 &  \\
         No cache    & 154  & 156.8 & 830.8  & 7929.7  &  \\
         With cache  & 27.4 & 25.1  & 49.8   & 130.9   &  \\
         Java        & 0.2  & 0.6   & 0.7    & 0.4     & 
@@ -124,6 +142,13 @@
 \end{frame}
 
 \begin{frame}[fragile]{Custom Method Ordering (Comparator)}
+  \note {
+    With the second extension, we can define a custom way of ordering methods
+    We just need to implement an MethodComparator
+    
+    In this useless example we just reverse the default order of methods,
+    except if the first argument of the method is Object
+  }
   \begin{minted}[fontsize=\footnotesize]{java}
     public class ReversedComparator extends AbstractMethodComparator {
       /* ... */
@@ -148,6 +173,9 @@
 \end{frame}
 
 \begin{frame}[fragile]{Custom Method Ordering (Generic Function)}
+  \note{
+    Here we implement the Generic Function with the extension parameters
+  }
   \begin{minted}[fontsize=\footnotesize]{java}
     @GenericFunctionExtended(
       useCache = false,
@@ -165,6 +193,13 @@
 \end{frame}
 
 \begin{frame}[fragile]{Custom Method Ordering}
+  \note{
+    And then we call the functions
+
+    Since we reversed the default order of methods we can see that in the first example the function that takes the interface as a parameter is called
+    (but not the one that is defined for Object)
+  }
+  
   \begin{minted}[fontsize=\footnotesize]{java}
     interface MyInterface1 {}
     class MyClass1 implements MyInterface1 {}
